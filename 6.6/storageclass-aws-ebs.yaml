@@ -1,0 +1,14 @@
+# In Amazon EKS clusters using Kubernetes 1.10 or less there exists no default
+# storage class (like in GKE or Minikube). That means, you have to create a
+# storage class in any case.
+# https://docs.aws.amazon.com/eks/latest/userguide/storage-classes.html
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: test
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+  fsType: ext4 

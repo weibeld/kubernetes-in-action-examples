@@ -1,0 +1,36 @@
+# These definitions belong to the application side (in contrast to the
+# PersistenceVolume definitions, which belong to the infrastructure side).
+# These same definitions can be used on any cluster (AWS, GCP, Minikube), the
+# only requirement is that the cluster contains a PersistentVolume with
+# sufficient capacities.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  # Setting this to the empty string ensures that a manually provided PV is
+  # used, and not one that is automatically provided by the default StorageClass
+  storageClassName: ""
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongodb-pvc-pod
+spec:
+  containers:
+  - image: mongo
+    name: mongodb
+    ports:
+    - containerPort: 27017
+    volumeMounts:
+    - name: mongodb-data
+      mountPath: /data/db
+  volumes:
+  - name: mongodb-data
+    persistentVolumeClaim:
+      claimName: mongodb-pvc

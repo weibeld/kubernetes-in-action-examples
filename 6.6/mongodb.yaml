@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  # If missing, uses default StorageClass (check with 'kubectl get sc')
+  #storageClassName: test
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongodb-pvc-pod
+spec:
+  containers:
+  - image: mongo
+    name: mongodb
+    ports:
+    - containerPort: 27017
+    volumeMounts:
+    - name: mongodb-data
+      mountPath: /data/db
+  volumes:
+  - name: mongodb-data
+    persistentVolumeClaim:
+      claimName: mongodb-pvc
